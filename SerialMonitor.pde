@@ -3,6 +3,9 @@ int monitorMode = 1;             //1 = ASCII, 2 = Dec, 3 = Hex
 
 boolean recieving = false;       //allows splitting of rx and tx printing
 
+String printString = "";
+boolean stringEnd = false;
+
 void tx(){
   if(!connected){
     console("Select valid port first!");
@@ -84,6 +87,13 @@ void rx(){
       switch (monitorMode){
         case 1: 
           out = str(char(inByte));
+          if (out != "\n")
+          {
+            printString = printString + out;
+          }
+          else {
+            stringEnd = true;
+          }
           break;
         case 2:
           out = str(inByte);
@@ -103,7 +113,16 @@ void rx(){
       if(monitorMode == 3){
         out = "0x" + out;
       }
-      
-      monitor(out);
+
+
+      if (monitorMode == 1) {
+        if (stringEnd) {
+          monitor(printString);
+          stringEnd = false;
+        }
+      }
+      else {
+        monitor(out);
+      }
     }
 }
